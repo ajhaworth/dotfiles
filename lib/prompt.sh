@@ -78,28 +78,36 @@ prompt_input() {
 }
 
 # Prompt for profile selection
-# Usage: select_profile
+# Usage: select_profile [os]
 # Returns: selected profile name in $REPLY
 select_profile() {
+    local target_os="${1:-}"
     local profiles=()
     local profile_dir
     profile_dir="$(get_repo_root)/config/profiles"
 
-    # Find all .conf files in profiles directory
+    # Find profiles matching the OS
     for conf in "$profile_dir"/*.conf; do
-        if [[ -f "$conf" ]]; then
+        [[ -f "$conf" ]] || continue
+
+        # Read PROFILE_OS from file without sourcing everything
+        local profile_os
+        profile_os=$(grep -E "^PROFILE_OS=" "$conf" 2>/dev/null | cut -d'"' -f2)
+
+        # Include if: no target OS specified, profile has no OS restriction, or OS matches
+        if [[ -z "$target_os" ]] || [[ -z "$profile_os" ]] || [[ "$profile_os" == "$target_os" ]]; then
             profiles+=("$(basename "$conf" .conf)")
         fi
     done
 
     if [[ ${#profiles[@]} -eq 0 ]]; then
-        log_error "No profiles found in $profile_dir"
+        log_error "No profiles found for $target_os in $profile_dir"
         return 1
     fi
 
     if [[ ${#profiles[@]} -eq 1 ]]; then
         REPLY="${profiles[0]}"
-        log_info "Using only available profile: $REPLY"
+        log_info "Using profile: $REPLY"
         return 0
     fi
 

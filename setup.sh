@@ -84,11 +84,17 @@ Examples:
 
 Available profiles:
 EOF
+    local current_os
+    current_os="$(detect_os)"
     for conf in "$SCRIPT_DIR/config/profiles"/*.conf; do
         if [[ -f "$conf" ]]; then
-            local name
+            local name profile_os
             name="$(basename "$conf" .conf)"
-            echo "    - $name"
+            profile_os=$(grep -E "^PROFILE_OS=" "$conf" 2>/dev/null | cut -d'"' -f2)
+            # Show if no OS restriction or matches current OS
+            if [[ -z "$profile_os" ]] || [[ "$profile_os" == "$current_os" ]]; then
+                echo "    - $name"
+            fi
         fi
     done
 }
@@ -745,7 +751,7 @@ run_full_setup() {
 
     # Prompt for profile if not specified
     if [[ -z "$PROFILE" ]]; then
-        select_profile
+        select_profile "$os"
         PROFILE="$REPLY"
     fi
 
