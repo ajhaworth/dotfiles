@@ -7,6 +7,10 @@
 #
 # Commands:
 #   (none)              Run full setup (default)
+#   dotfiles            Install/link dotfiles
+#   dotfiles ls         List dotfiles and status
+#
+#   macOS only:
 #   homebrew            Install Homebrew packages (formulae + casks)
 #   homebrew ls         List Homebrew packages and status
 #   formulae            Install Homebrew formulae only
@@ -15,9 +19,11 @@
 #   casks ls            List Homebrew casks
 #   mas                 Install Mac App Store apps
 #   mas ls              List Mac App Store apps
-#   dotfiles            Install/link dotfiles
-#   dotfiles ls         List dotfiles and status
-#   defaults            Apply system preferences (macOS)
+#   defaults            Apply system preferences
+#
+#   Linux only:
+#   packages            Install system packages (apt/dnf/etc)
+#   packages ls         List system packages and status
 #
 # Options:
 #   --profile <name>    Use specified profile (personal, work)
@@ -55,6 +61,10 @@ Cross-platform workstation setup script.
 
 Commands:
     (none)              Run full setup (default)
+    dotfiles            Install/link dotfiles
+    dotfiles ls         List dotfiles and status
+
+  macOS only:
     homebrew            Install Homebrew packages (formulae + casks)
     homebrew ls         List Homebrew packages and status
     formulae            Install Homebrew formulae only
@@ -63,9 +73,11 @@ Commands:
     casks ls            List Homebrew casks
     mas                 Install Mac App Store apps
     mas ls              List Mac App Store apps
-    dotfiles            Install/link dotfiles
-    dotfiles ls         List dotfiles and status
-    defaults            Apply system preferences (macOS)
+    defaults            Apply system preferences
+
+  Linux only:
+    packages            Install system packages (apt/dnf/etc)
+    packages ls         List system packages and status
 
 Options:
     --profile <name>    Use specified profile (personal, work)
@@ -76,11 +88,13 @@ Options:
 Examples:
     ./setup.sh                          # Full setup (interactive)
     ./setup.sh --profile personal       # Full setup with profile
-    ./setup.sh homebrew                 # Install just Homebrew packages
     ./setup.sh dotfiles                 # Install just dotfiles
-    ./setup.sh defaults                 # Apply just system preferences
-    ./setup.sh homebrew ls              # List Homebrew packages
     ./setup.sh dotfiles ls              # List dotfiles status
+    ./setup.sh homebrew                 # Install Homebrew packages (macOS)
+    ./setup.sh homebrew ls              # List Homebrew packages (macOS)
+    ./setup.sh defaults                 # Apply system preferences (macOS)
+    ./setup.sh packages                 # Install system packages (Linux)
+    ./setup.sh packages ls              # List system packages (Linux)
 
 Available profiles:
 EOF
