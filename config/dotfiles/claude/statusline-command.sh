@@ -9,10 +9,26 @@ lines_removed=$(echo "$input" | jq -r '.cost.total_lines_removed // 0')
 cd "$cwd" 2>/dev/null
 git_branch=$(git branch --show-current 2>/dev/null)
 
+git_status=""
+if [ -n "$git_branch" ]; then
+    # Check for staged changes
+    if ! git diff --cached --quiet 2>/dev/null; then
+        git_status="+"
+    fi
+    # Check for unstaged changes
+    if ! git diff --quiet 2>/dev/null; then
+        git_status="${git_status}*"
+    fi
+    # Check for untracked files
+    if [ -n "$(git ls-files --others --exclude-standard 2>/dev/null)" ]; then
+        git_status="${git_status}?"
+    fi
+fi
+
 status="$model"
 dir_display="${cwd/#$HOME/~}"
 status="$status | $dir_display"
-[ -n "$git_branch" ] && status="$status | git:$git_branch"
+[ -n "$git_branch" ] && status="$status | git:$git_branch$git_status"
 [ "$lines_added" -gt 0 ] || [ "$lines_removed" -gt 0 ] && status="$status | +$lines_added-$lines_removed"
 [ -n "$context_remaining" ] && status="$status | context:${context_remaining}%"
 

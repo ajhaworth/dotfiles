@@ -9,7 +9,17 @@
     excludesfile = ~/.config/git/ignore
     autocrlf = input
     whitespace = fix
-    pager = less -FRX
+    # Use delta if available, otherwise less
+    pager = sh -c 'command -v delta >/dev/null && delta || less -FRX'
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true
+    light = false
+    line-numbers = true
+    syntax-theme = OneHalfDark
 
 [init]
     defaultBranch = main

@@ -84,6 +84,9 @@ bindkey '^[[B' history-search-forward
 # Tab colors for Ghostty
 [[ -f ~/.config/shell/tab-colors.zsh ]] && source ~/.config/shell/tab-colors.zsh
 
+# Terminal colors and aliases
+[[ -f ~/.config/shell/colors.zsh ]] && source ~/.config/shell/colors.zsh
+
 # ============================================================================
 # Tool integrations
 # ============================================================================
