@@ -763,10 +763,25 @@ run_full_setup() {
     echo ""
     log_step "Setup configuration"
     echo "  Profile:      $PROFILE"
-    echo "  Homebrew:     install"
-    echo "  Dotfiles:     install"
-    echo "  Defaults:     apply"
-    echo "  MAS Apps:     $(if [[ "${PROFILE_MAS:-true}" == "false" ]]; then echo "skip (profile)"; else echo "install"; fi)"
+
+    # Check if any Homebrew packages are enabled
+    local homebrew_enabled="false"
+    for var in FORMULAE_CORE FORMULAE_SHELL FORMULAE_SOFTWARE_DEV FORMULAE_DEVOPS FORMULAE_MEDIA \
+               CASKS_PRODUCTIVITY CASKS_DEVELOPMENT CASKS_UTILITIES CASKS_POWER_USER CASKS_BROWSERS CASKS_CREATIVE CASKS_MEDIA; do
+        if [[ "${!var:-false}" == "true" ]]; then
+            homebrew_enabled="true"
+            break
+        fi
+    done
+
+    if [[ "$os" == "macos" ]]; then
+        echo "  Homebrew:     $(if [[ "$homebrew_enabled" == "true" ]]; then echo "install"; else echo "skip (profile)"; fi)"
+        echo "  Dotfiles:     $(if [[ "${PROFILE_DOTFILES:-true}" == "false" ]]; then echo "skip (profile)"; else echo "install"; fi)"
+        echo "  Defaults:     $(if [[ "${PROFILE_APPLY_DEFAULTS:-true}" == "false" ]]; then echo "skip (profile)"; else echo "apply"; fi)"
+        echo "  MAS Apps:     $(if [[ "${PROFILE_MAS:-true}" == "false" ]]; then echo "skip (profile)"; else echo "install"; fi)"
+    elif [[ "$os" == "linux" ]]; then
+        echo "  Dotfiles:     $(if [[ "${PROFILE_DOTFILES:-true}" == "false" ]]; then echo "skip (profile)"; else echo "install"; fi)"
+    fi
     echo ""
 
     # Confirm before proceeding
