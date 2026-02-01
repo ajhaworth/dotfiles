@@ -34,7 +34,7 @@ cd dotfiles
 | Platform | Status |
 |----------|--------|
 | macOS    | Supported |
-| Linux    | Planned |
+| Linux    | Supported |
 | Windows  | Planned |
 
 ## Profiles
@@ -43,11 +43,15 @@ Profiles control which package categories get installed. Edit `config/profiles/*
 
 ### Personal (`--profile personal`)
 
-Full installation for personal devices including all package categories, Mac App Store apps, and system preferences.
+Full installation for personal macOS devices including all package categories, Mac App Store apps, and system preferences.
 
 ### Work (`--profile work`)
 
-Minimal installation for work devices - core development tools only, skips media/graphics apps and Mac App Store.
+Minimal installation for work macOS devices - core development tools only, skips media/graphics apps and Mac App Store.
+
+### Linux (`--profile linux`)
+
+Full dev station setup for Linux (Debian/Ubuntu) including core tools, shell enhancements, and web development stack.
 
 ## Usage
 
@@ -58,7 +62,7 @@ Minimal installation for work devices - core development tools only, skips media
 # Full setup with profile
 ./setup.sh --profile personal
 
-# Install specific components
+# Install specific components (macOS)
 ./setup.sh homebrew            # All Homebrew packages
 ./setup.sh formulae            # CLI tools only
 ./setup.sh casks               # GUI apps only
@@ -66,18 +70,23 @@ Minimal installation for work devices - core development tools only, skips media
 ./setup.sh dotfiles            # Dotfiles only
 ./setup.sh defaults            # System preferences only
 
+# Install specific components (Linux)
+./setup.sh packages            # System packages (apt)
+./setup.sh dotfiles            # Dotfiles only
+
 # Check status without making changes
-./setup.sh homebrew ls         # Show package status
-./setup.sh formulae ls         # Show formulae status
-./setup.sh casks ls            # Show cask status
-./setup.sh mas ls              # Show MAS app status
+./setup.sh homebrew ls         # Show package status (macOS)
+./setup.sh formulae ls         # Show formulae status (macOS)
+./setup.sh casks ls            # Show cask status (macOS)
+./setup.sh mas ls              # Show MAS app status (macOS)
+./setup.sh packages ls         # Show package status (Linux)
 ./setup.sh dotfiles ls         # Show symlink status
 ```
 
 ### Options
 
 ```
---profile <name>    Use specified profile (personal, work)
+--profile <name>    Use specified profile (personal, work, linux)
 --dry-run           Show what would be done without making changes
 --force             Skip confirmation prompts
 --help              Show help message
@@ -87,10 +96,15 @@ Minimal installation for work devices - core development tools only, skips media
 
 ### Adding Packages
 
-Packages are defined in text files under `config/packages/macos/`:
+Packages are defined in text files under `config/packages/`:
+
+**macOS** (`config/packages/macos/`):
 - `formulae/*.txt` - Homebrew CLI tools (one package per line)
 - `casks/*.txt` - Homebrew GUI apps (one package per line)
 - `mas/apps.txt` - Mac App Store apps (`ID|Name` format)
+
+**Linux** (`config/packages/linux/`):
+- `apt/*.txt` - APT packages (one package per line)
 
 ### Local Overrides
 
@@ -124,19 +138,28 @@ dotfiles/
 │   ├── symlink.sh              # Symlink utilities
 │   └── packages.sh             # Package parsing
 ├── config/
-│   ├── profiles/               # Profile configs (personal.conf, work.conf)
-│   ├── packages/macos/         # Package lists
-│   │   ├── formulae/           # CLI tools
-│   │   ├── casks/              # GUI apps
-│   │   └── mas/                # App Store apps
+│   ├── profiles/               # Profile configs (personal.conf, work.conf, linux.conf)
+│   ├── packages/
+│   │   ├── macos/              # macOS package lists
+│   │   │   ├── formulae/       # CLI tools
+│   │   │   ├── casks/          # GUI apps
+│   │   │   └── mas/            # App Store apps
+│   │   └── linux/              # Linux package lists
+│   │       └── apt/            # APT packages
 │   └── dotfiles/               # Configuration files and manifest
 └── platforms/
-    └── macos/                  # macOS-specific scripts
+    ├── macos/                  # macOS-specific scripts
+    │   ├── setup.sh            # Orchestrator
+    │   ├── homebrew.sh         # Package installer
+    │   ├── dotfiles.sh         # Symlink installer
+    │   ├── defaults.sh         # Preferences loader
+    │   └── defaults/           # Individual preference scripts
+    └── linux/                  # Linux-specific scripts
         ├── setup.sh            # Orchestrator
-        ├── homebrew.sh         # Package installer
-        ├── dotfiles.sh         # Symlink installer
-        ├── defaults.sh         # Preferences loader
-        └── defaults/           # Individual preference scripts
+        ├── packages.sh         # APT package installer
+        ├── repositories.sh     # Third-party repos (NodeSource, etc.)
+        ├── extras.sh           # Extra tools (starship, eza, etc.)
+        └── dotfiles.sh         # Symlink installer
 ```
 
 ## Security
