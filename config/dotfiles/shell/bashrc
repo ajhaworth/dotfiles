@@ -58,6 +58,9 @@ shopt -s extglob
 # Source functions file
 [[ -f ~/.functions ]] && source ~/.functions
 
+# Terminal colors and aliases
+[[ -f ~/.config/shell/colors.zsh ]] && source ~/.config/shell/colors.zsh
+
 # ============================================================================
 # Tool integrations
 # ============================================================================
