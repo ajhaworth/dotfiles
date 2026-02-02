@@ -6,7 +6,7 @@
 # condition: profile variable name (optional, entry skipped if variable is "false")
 
 # Shell configuration
-config/dotfiles/shell/zshrc|~/.zshrc||DOTFILES_SHELL
+config/dotfiles/shell/zshrc|~/.zshrc||DOTFILES_ZSHRC
 config/dotfiles/shell/bashrc|~/.bashrc||DOTFILES_SHELL
 config/dotfiles/shell/tab-colors.zsh|~/.config/shell/tab-colors.zsh||DOTFILES_SHELL
 config/dotfiles/shell/colors.zsh|~/.config/shell/colors.zsh||DOTFILES_SHELL
