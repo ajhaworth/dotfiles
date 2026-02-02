@@ -114,13 +114,15 @@ command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
 # Starship prompt
 command -v starship &>/dev/null && eval "$(starship init zsh)"
 
-# Zsh plugins (if installed via Homebrew)
-if [[ -f /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then
-    source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-fi
-if [[ -f /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]]; then
-    source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-fi
+# Zsh plugins
+for dir in /opt/homebrew/share /usr/local/share /usr/share; do
+    [[ -f "$dir/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] && \
+        source "$dir/zsh-autosuggestions/zsh-autosuggestions.zsh" && break
+done
+for dir in /opt/homebrew/share /usr/local/share /usr/share; do
+    [[ -f "$dir/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]] && \
+        source "$dir/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" && break
+done
 
 # ============================================================================
 # Local overrides
