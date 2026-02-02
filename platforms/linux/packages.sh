@@ -92,7 +92,7 @@ install_packages() {
 
         # Check if category is enabled in profile
         local var_name
-        var_name="PACKAGES_$(echo "$category" | tr '[:lower:]-' '[:upper:]_')"
+        var_name="$(get_category_var PACKAGES "$category")"
 
         if [[ "${!var_name:-true}" != "true" ]]; then
             log_substep "Skipping $category (disabled in profile)"

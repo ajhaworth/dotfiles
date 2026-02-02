@@ -117,31 +117,3 @@ select_profile() {
     REPLY="${profiles[$REPLY]}"
 }
 
-# Display a progress spinner
-# Usage: spinner $PID "message"
-spinner() {
-    local pid=$1
-    local message="$2"
-    local spin='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
-    local i=0
-
-    while kill -0 "$pid" 2>/dev/null; do
-        printf "\r  ${CYAN}%s${RESET} %s" "${spin:i++%${#spin}:1}" "$message"
-        sleep 0.1
-    done
-
-    printf "\r"
-}
-
-# Display a countdown
-# Usage: countdown 5 "Starting in"
-countdown() {
-    local seconds=$1
-    local message="${2:-Starting in}"
-
-    for ((i=seconds; i>0; i--)); do
-        printf "\r${YELLOW}%s %d...${RESET}" "$message" "$i"
-        sleep 1
-    done
-    printf "\r%-$((${#message} + 10))s\r" " "
-}

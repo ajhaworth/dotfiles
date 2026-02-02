@@ -77,11 +77,6 @@ is_apple_silicon() {
     [[ "$(detect_os)" == "macos" ]] && [[ "$(detect_arch)" == "arm64" ]]
 }
 
-# Check if running on Intel Mac
-is_intel_mac() {
-    [[ "$(detect_os)" == "macos" ]] && [[ "$(detect_arch)" == "x86_64" ]]
-}
-
 # Get Linux distribution name
 get_linux_distro() {
     if [[ "$(detect_os)" != "linux" ]]; then
@@ -124,14 +119,3 @@ print_system_info() {
     esac
 }
 
-# Check minimum macOS version
-check_macos_version() {
-    local required_version="$1"
-    local current_version
-    current_version="$(get_macos_major_version)"
-
-    if [[ "$current_version" -lt "$required_version" ]]; then
-        return 1
-    fi
-    return 0
-}

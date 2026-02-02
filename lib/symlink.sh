@@ -29,10 +29,9 @@ create_symlink() {
     # Get absolute path of source
     source="$(cd "$(dirname "$source")" && pwd)/$(basename "$source")"
 
-    # Prepare shortened paths for display
-    local short_dest short_src
+    # Prepare shortened path for display
+    local short_dest
     short_dest="$(shorten_path "$destination")"
-    short_src="$(basename "$source")"
 
     # Create parent directory if needed
     local dest_dir
@@ -105,32 +104,6 @@ backup_file() {
         mv "$filepath" "$BACKUP_DIR/"
     fi
     return 0  # Signal that we backed up a real file
-}
-
-# Remove a symlink if it points to our dotfiles
-# Usage: remove_symlink destination
-remove_symlink() {
-    local destination="$1"
-    destination="${destination/#\~/$HOME}"
-
-    if [[ ! -L "$destination" ]]; then
-        log_warn "Not a symlink: $(shorten_path "$destination")"
-        return 1
-    fi
-
-    local target
-    target="$(readlink "$destination")"
-
-    # Only remove if it points to our dotfiles
-    if [[ "$target" == *"setup-os"* ]] || [[ "$target" == *"dotfiles"* ]]; then
-        echo -e "  ${RED}-${RESET} $(shorten_path "$destination")"
-        if ! is_dry_run; then
-            rm "$destination"
-        fi
-    else
-        log_warn "Symlink doesn't point to our dotfiles: $(shorten_path "$destination")"
-        return 1
-    fi
 }
 
 # Process a manifest file

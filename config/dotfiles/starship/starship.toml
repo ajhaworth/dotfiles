@@ -37,6 +37,7 @@ format = "[$symbol$branch]($style) "
 symbol = " "
 
 [git_status]
+disabled = true
 style = "#FFC799"
 format = '([$all_status$ahead_behind]($style) )'
 conflicted = "="

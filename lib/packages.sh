@@ -66,23 +66,6 @@ parse_mas_list() {
     done < "$file"
 }
 
-# Get packages from a directory of package files
-# Usage: get_packages_from_dir directory [file_pattern]
-get_packages_from_dir() {
-    local dir="$1"
-    local pattern="${2:-*.txt}"
-
-    if [[ ! -d "$dir" ]]; then
-        log_error "Package directory not found: $dir"
-        return 1
-    fi
-
-    for file in "$dir"/$pattern; do
-        [[ -f "$file" ]] || continue
-        parse_package_list "$file"
-    done
-}
-
 # Check if a package category is enabled for the current profile
 # Usage: is_category_enabled category
 is_category_enabled() {
@@ -148,29 +131,3 @@ get_enabled_casks() {
     done
 }
 
-# Count packages in a directory
-# Usage: count_packages dir
-count_packages() {
-    local dir="$1"
-    local count=0
-
-    for file in "$dir"/*.txt; do
-        [[ -f "$file" ]] || continue
-        local file_count
-        file_count=$(parse_package_list "$file" | wc -l | xargs)
-        count=$((count + file_count))
-    done
-
-    echo "$count"
-}
-
-# List package categories in a directory
-# Usage: list_categories dir
-list_categories() {
-    local dir="$1"
-
-    for file in "$dir"/*.txt; do
-        [[ -f "$file" ]] || continue
-        basename "$file" .txt
-    done
-}

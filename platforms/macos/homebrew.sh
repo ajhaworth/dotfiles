@@ -75,113 +75,77 @@ update_homebrew() {
     log_success "Homebrew updated"
 }
 
-# Install Homebrew formulae
-install_formulae() {
-    log_step "Installing Homebrew formulae"
+# Install Homebrew packages (generic helper)
+# Usage: install_brew_packages packages_dir category_prefix [--cask]
+install_brew_packages() {
+    local packages_dir="$1"
+    local category_prefix="$2"
+    local is_cask="${3:-}"
+    local packages=()
 
-    local packages_dir="$SCRIPT_DIR/config/packages/macos/formulae"
-    local formulae=()
-
-    # Collect all enabled formulae
+    # Collect all enabled packages
     for file in "$packages_dir"/*.txt; do
         [[ -f "$file" ]] || continue
 
         local category
         category="$(basename "$file" .txt)"
-        local category_upper
-        category_upper="$(echo "$category" | tr '[:lower:]-' '[:upper:]_')"
-        local category_var="FORMULAE_${category_upper}"
+        local category_var
+        category_var="$(get_category_var "$category_prefix" "$category")"
 
         # Check if category is enabled (default to true if not set)
         if [[ "${!category_var:-true}" == "true" ]]; then
             log_substep "Including category: $category"
             while IFS= read -r package; do
-                formulae+=("$package")
+                packages+=("$package")
             done < <(parse_package_list "$file")
         else
             log_substep "Skipping category: $category"
         fi
     done
 
-    if [[ ${#formulae[@]} -eq 0 ]]; then
-        log_warn "No formulae to install"
+    if [[ ${#packages[@]} -eq 0 ]]; then
+        log_warn "No packages to install"
         return 0
     fi
 
-    log_info "Installing ${#formulae[@]} formulae..."
+    log_info "Installing ${#packages[@]} packages..."
+
+    local install_cmd="brew install"
+    local list_cmd="brew list --formula"
+    if [[ "$is_cask" == "--cask" ]]; then
+        install_cmd="brew install --cask"
+        list_cmd="brew list --cask"
+    fi
 
     if is_dry_run; then
-        for formula in "${formulae[@]}"; do
-            log_dry "brew install $formula"
+        for pkg in "${packages[@]}"; do
+            log_dry "$install_cmd $pkg"
         done
         return 0
     fi
 
-    # Install formulae (continue on error)
-    for formula in "${formulae[@]}"; do
-        if brew list --formula "$formula" &>/dev/null; then
-            log_substep "Already installed: $formula"
+    # Install packages (continue on error)
+    for pkg in "${packages[@]}"; do
+        if $list_cmd "$pkg" &>/dev/null; then
+            log_substep "Already installed: $pkg"
         else
-            log_substep "Installing: $formula"
-            brew install "$formula" || log_warn "Failed to install: $formula"
+            log_substep "Installing: $pkg"
+            $install_cmd "$pkg" || log_warn "Failed to install: $pkg"
         fi
     done
+}
 
+# Install Homebrew formulae
+install_formulae() {
+    log_step "Installing Homebrew formulae"
+    install_brew_packages "$SCRIPT_DIR/config/packages/macos/formulae" "FORMULAE"
     log_success "Formulae installation complete"
 }
 
 # Install Homebrew casks
 install_casks() {
     log_step "Installing Homebrew casks"
-
-    local packages_dir="$SCRIPT_DIR/config/packages/macos/casks"
-    local casks=()
-
-    # Collect all enabled casks
-    for file in "$packages_dir"/*.txt; do
-        [[ -f "$file" ]] || continue
-
-        local category
-        category="$(basename "$file" .txt)"
-        local category_upper
-        category_upper="$(echo "$category" | tr '[:lower:]-' '[:upper:]_')"
-        local category_var="CASKS_${category_upper}"
-
-        # Check if category is enabled (default to true if not set)
-        if [[ "${!category_var:-true}" == "true" ]]; then
-            log_substep "Including category: $category"
-            while IFS= read -r package; do
-                casks+=("$package")
-            done < <(parse_package_list "$file")
-        else
-            log_substep "Skipping category: $category"
-        fi
-    done
-
-    if [[ ${#casks[@]} -eq 0 ]]; then
-        log_warn "No casks to install"
-        return 0
-    fi
-
-    log_info "Installing ${#casks[@]} casks..."
-
-    if is_dry_run; then
-        for cask in "${casks[@]}"; do
-            log_dry "brew install --cask $cask"
-        done
-        return 0
-    fi
-
-    # Install casks (continue on error)
-    for cask in "${casks[@]}"; do
-        if brew list --cask "$cask" &>/dev/null; then
-            log_substep "Already installed: $cask"
-        else
-            log_substep "Installing: $cask"
-            brew install --cask "$cask" || log_warn "Failed to install: $cask"
-        fi
-    done
-
+    install_brew_packages "$SCRIPT_DIR/config/packages/macos/casks" "CASKS" "--cask"
     log_success "Cask installation complete"
 }
 

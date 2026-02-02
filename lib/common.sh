@@ -73,26 +73,12 @@ command_exists() {
     command -v "$1" &>/dev/null
 }
 
-# Ask for confirmation
-confirm() {
-    local prompt="${1:-Continue?}"
-    local default="${2:-n}"
-
-    if [[ "${FORCE:-false}" == "true" ]]; then
-        return 0
-    fi
-
-    local yn_prompt
-    if [[ "$default" == "y" ]]; then
-        yn_prompt="[Y/n]"
-    else
-        yn_prompt="[y/N]"
-    fi
-
-    read -r -p "$(echo -e "${YELLOW}$prompt${RESET} $yn_prompt ") " response
-    response="${response:-$default}"
-
-    [[ "$response" =~ ^[Yy]$ ]]
+# Convert category name to profile variable name
+# Usage: get_category_var "FORMULAE" "software-dev" -> "FORMULAE_SOFTWARE_DEV"
+get_category_var() {
+    local prefix="$1"
+    local category="$2"
+    echo "${prefix}_$(echo "$category" | tr '[:lower:]-' '[:upper:]_')"
 }
 
 # Print a section header
@@ -134,14 +120,6 @@ print_banner() {
     echo -e "   ${DIM}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
     echo -e "   ${C3}${BOLD}Cross-platform workstation setup${RESET}"
     echo ""
-}
-
-# Ensure script is run from repo root
-ensure_repo_root() {
-    if [[ ! -f "setup.sh" ]] || [[ ! -d "lib" ]]; then
-        log_error "Please run this script from the repository root"
-        exit 1
-    fi
 }
 
 # Get the repository root directory
