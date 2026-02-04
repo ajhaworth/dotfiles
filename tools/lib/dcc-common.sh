@@ -13,7 +13,14 @@ get_dcc_dir() {
 # Get Blender config base path for the current OS
 # Usage: get_blender_config_base
 # Returns: Base path without version (e.g., ~/Library/Application Support/Blender)
+# Override: Set BLENDER_CONFIG_BASE environment variable to use a custom path
 get_blender_config_base() {
+    # Allow user override via environment variable
+    if [[ -n "${BLENDER_CONFIG_BASE:-}" ]]; then
+        echo "$BLENDER_CONFIG_BASE"
+        return 0
+    fi
+
     local os="${1:-$(detect_os)}"
 
     case "$os" in

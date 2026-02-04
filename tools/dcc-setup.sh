@@ -33,6 +33,7 @@ source "$DCC_SCRIPT_DIR/lib/dcc-common.sh"
 # Default options
 APP=""
 VERSION=""
+CONFIG_PATH=""
 DRY_RUN="${DRY_RUN:-false}"
 DO_BACKUP="false"
 DO_RESTORE="false"
@@ -52,6 +53,7 @@ Sets up Blender and Houdini configurations.
 Options:
     --app <name>        Install specific app only (blender, houdini)
     --version <ver>     Target specific version (e.g., 4.2, 20.5)
+    --config-path <path> Override base config path (e.g., for custom Blender location)
     --dry-run           Preview changes without making them
     --backup            Backup existing configs before making changes
     --restore           Restore configs from backup
@@ -62,6 +64,7 @@ Examples:
     ./tools/dcc-setup.sh                          # Interactive setup
     ./tools/dcc-setup.sh --app blender            # Setup Blender only
     ./tools/dcc-setup.sh --app houdini --version 20.5
+    ./tools/dcc-setup.sh --app blender --config-path /custom/path
     ./tools/dcc-setup.sh --dry-run                # Preview changes
     ./tools/dcc-setup.sh --backup --app blender   # Backup then setup
     ./tools/dcc-setup.sh --list                   # List versions
@@ -86,6 +89,14 @@ parse_args() {
                 ;;
             --version=*)
                 VERSION="${1#*=}"
+                shift
+                ;;
+            --config-path)
+                CONFIG_PATH="$2"
+                shift 2
+                ;;
+            --config-path=*)
+                CONFIG_PATH="${1#*=}"
                 shift
                 ;;
             --dry-run)
@@ -204,6 +215,23 @@ setup_blender() {
     local versions=()
 
     print_header "Blender Setup"
+
+    # Handle config path override
+    if [[ -n "$CONFIG_PATH" ]]; then
+        export BLENDER_CONFIG_BASE="$CONFIG_PATH"
+        log_info "Using custom config path: $CONFIG_PATH"
+    elif [[ -z "$VERSION" ]] && [[ -t 0 ]]; then
+        # Interactive mode: show detected path and offer override
+        local detected_path
+        detected_path="$(get_blender_config_base)"
+        echo ""
+        log_info "Detected Blender config: $detected_path"
+        read -r -p "Press Enter to confirm, or enter a different path: " custom_path
+        if [[ -n "$custom_path" ]]; then
+            export BLENDER_CONFIG_BASE="$custom_path"
+            log_info "Using custom config path: $custom_path"
+        fi
+    fi
 
     # Find or use specified version
     if [[ -n "$VERSION" ]]; then
