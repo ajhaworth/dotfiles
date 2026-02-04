@@ -20,8 +20,8 @@ $character"""
 add_newline = false
 
 [character]
-success_symbol = "[❯](bold #4EC994)"
-error_symbol = "[❯](bold #E06C75)"
+success_symbol = "[\\$](#6B6B6B)"
+error_symbol = "[\\$](bold #E06C75)"
 
 [directory]
 style = "bold #61AFEF"
