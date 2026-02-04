@@ -17,12 +17,12 @@ fi
 # Go installation (Linux)
 if [[ -d "/usr/local/go" ]]; then
     export PATH="$PATH:/usr/local/go/bin"
-    export GOPATH="$HOME/go"
+    export GOPATH="$HOME/.local/go"
     export PATH="$PATH:$GOPATH/bin"
 fi
 
 # Add local bin directories to PATH
-export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
 
 # ============================================================================
 # History configuration
