@@ -9,15 +9,15 @@ Cross-platform workstation setup using simple shell scripts with profile-based c
 git clone https://github.com/ajhaworth/dotfiles.git
 cd dotfiles
 
-# Run setup with profile selection
-./setup.sh
-
-# Or specify a profile directly
+# macOS/Linux
 ./setup.sh --profile personal
-./setup.sh --profile work
+./setup.sh --dry-run --profile work
+```
 
-# Preview changes without making them
-./setup.sh --dry-run --profile personal
+```powershell
+# Windows (PowerShell)
+.\setup.ps1
+.\setup.ps1 -DryRun
 ```
 
 ## Features
@@ -35,7 +35,7 @@ cd dotfiles
 |----------|--------|
 | macOS    | Supported |
 | Linux    | Supported |
-| Windows  | Planned |
+| Windows  | Supported |
 
 ## Profiles
 
@@ -52,6 +52,10 @@ Minimal installation for work macOS devices - core development tools only, skips
 ### Linux (`--profile linux`)
 
 Full dev station setup for Linux (Debian/Ubuntu) including core tools, shell enhancements, and web development stack.
+
+### Windows (`--profile windows`)
+
+Gaming workstation setup for Windows including core dev tools, browsers, productivity apps, gaming clients, and emulators. Includes optional bloatware removal.
 
 ## Usage
 
@@ -83,13 +87,33 @@ Full dev station setup for Linux (Debian/Ubuntu) including core tools, shell enh
 ./setup.sh dotfiles ls         # Show symlink status
 ```
 
+```powershell
+# Windows
+.\setup.ps1                    # Full setup
+.\setup.ps1 -DryRun            # Preview changes
+.\setup.ps1 dotfiles           # Dotfiles only
+.\setup.ps1 dotfiles ls        # Check symlink status
+.\setup.ps1 packages           # Winget + Chocolatey
+.\setup.ps1 packages ls        # Show package status
+.\setup.ps1 debloat            # Remove bloatware
+.\setup.ps1 -Debloat -Force    # Full setup with debloat
+```
+
 ### Options
 
+**macOS/Linux:**
 ```
---profile <name>    Use specified profile (personal, work, linux)
+--profile <name>    Use specified profile (personal, work, linux, windows)
 --dry-run           Show what would be done without making changes
 --force             Skip confirmation prompts
 --help              Show help message
+```
+
+**Windows:**
+```
+-DryRun             Show what would be done without making changes
+-Force              Skip confirmation prompts
+-Debloat            Include bloatware removal in full setup
 ```
 
 ## Customization
@@ -105,6 +129,10 @@ Packages are defined in text files under `config/packages/`:
 
 **Linux** (`config/packages/linux/`):
 - `apt/*.txt` - APT packages (one package per line)
+
+**Windows** (`config/packages/windows/`):
+- `winget/*.txt` - Winget packages (one package per line)
+- `choco/*.txt` - Chocolatey packages (one package per line, flags allowed)
 
 ### Local Overrides
 
@@ -130,23 +158,31 @@ Machine-specific settings go in `.local` files (not tracked by git):
 
 ```
 dotfiles/
-├── setup.sh                    # Entry point
+├── setup.sh                    # Entry point (macOS/Linux)
+├── setup.ps1                   # Entry point (Windows)
 ├── lib/                        # Shared libraries
 │   ├── common.sh               # Colors, logging
 │   ├── detect.sh               # OS detection
 │   ├── prompt.sh               # User interaction
 │   ├── symlink.sh              # Symlink utilities
-│   └── packages.sh             # Package parsing
+│   ├── packages.sh             # Package parsing
+│   └── windows/                # PowerShell modules
+│       ├── common.psm1         # Logging, profile parsing
+│       ├── dotfiles.psm1       # Symlink management
+│       └── packages.psm1       # Winget/Chocolatey helpers
 ├── config/
-│   ├── profiles/               # Profile configs (personal.conf, work.conf, linux.conf)
+│   ├── profiles/               # Profile configs
 │   ├── packages/
 │   │   ├── macos/              # macOS package lists
 │   │   │   ├── formulae/       # CLI tools
 │   │   │   ├── casks/          # GUI apps
 │   │   │   └── mas/            # App Store apps
-│   │   └── linux/              # Linux package lists
-│   │       └── apt/            # APT packages
-│   └── dotfiles/               # Configuration files and manifest
+│   │   ├── linux/              # Linux package lists
+│   │   │   └── apt/            # APT packages
+│   │   └── windows/            # Windows package lists
+│   │       ├── winget/         # Winget packages
+│   │       └── choco/          # Chocolatey packages
+│   └── dotfiles/               # Configuration files and manifests
 └── platforms/
     ├── macos/                  # macOS-specific scripts
     │   ├── setup.sh            # Orchestrator
@@ -154,12 +190,17 @@ dotfiles/
     │   ├── dotfiles.sh         # Symlink installer
     │   ├── defaults.sh         # Preferences loader
     │   └── defaults/           # Individual preference scripts
-    └── linux/                  # Linux-specific scripts
-        ├── setup.sh            # Orchestrator
-        ├── packages.sh         # APT package installer
-        ├── repositories.sh     # Third-party repos (NodeSource, etc.)
-        ├── extras.sh           # Extra tools (starship, eza, etc.)
-        └── dotfiles.sh         # Symlink installer
+    ├── linux/                  # Linux-specific scripts
+    │   ├── setup.sh            # Orchestrator
+    │   ├── packages.sh         # APT package installer
+    │   ├── repositories.sh     # Third-party repos (NodeSource, etc.)
+    │   ├── extras.sh           # Extra tools (starship, eza, etc.)
+    │   └── dotfiles.sh         # Symlink installer
+    └── windows/                # Windows-specific scripts
+        ├── setup.ps1           # Orchestrator
+        ├── packages.ps1        # Winget + Chocolatey installer
+        ├── dotfiles.ps1        # Symlink installer
+        └── debloat.ps1         # Bloatware removal
 ```
 
 ## Security
@@ -173,6 +214,8 @@ This repository is designed to be public and contains no secrets. Personal infor
 **MAS apps won't install** - Sign into the Mac App Store app first, then run setup again.
 
 **Dotfile symlinks fail** - Existing files will be backed up automatically. Check for conflicts with `./setup.sh dotfiles ls`.
+
+**Windows symlinks fail** - Enable Developer Mode (Settings > Update & Security > For developers) or run PowerShell as Administrator.
 
 **Preferences not applying** - Some preferences require a logout/login or restart to take effect.
 
