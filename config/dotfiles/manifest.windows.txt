@@ -1,0 +1,12 @@
+# manifest.windows.txt - Windows dotfiles symlink mapping
+# Format: source|destination|condition
+# source: path relative to repo root
+# destination: path relative to $HOME (%USERPROFILE%)
+# condition: profile variable name (optional, entry skipped if variable is not "true")
+
+# Git configuration
+config/dotfiles/git/config|.gitconfig|DOTFILES_GIT
+
+# Claude Code
+config/dotfiles/claude/settings.windows.json|.claude/settings.json|DOTFILES_CLAUDE
+config/dotfiles/claude/statusline-command.ps1|.claude/statusline-command.ps1|DOTFILES_CLAUDE

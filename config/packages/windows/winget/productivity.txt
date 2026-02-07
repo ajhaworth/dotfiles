@@ -1,0 +1,3 @@
+# Productivity tools
+AgileBits.1Password
+Nextcloud.NextcloudDesktop

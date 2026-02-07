@@ -1,0 +1,6 @@
+# Core tools - essential utilities
+Git.Git
+Microsoft.VisualStudioCode
+Microsoft.PowerShell
+Microsoft.WindowsTerminal
+Fork.Fork

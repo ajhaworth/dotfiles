@@ -1,0 +1,3 @@
+# Emulators (Winget versions)
+Stenzek.DuckStation
+Cemu.Cemu
